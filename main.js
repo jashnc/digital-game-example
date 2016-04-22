@@ -1,13 +1,4 @@
-var canvas;
-var stage;
-
-var message;
-var bitmap;
-
-var loader;
-var ticker;
-
-var preload;
+var canvas, stage, message, player, map, loader, ticker, preload;
 
 //set up keyboard events
 document.onkeydown = handleKeyDown;
@@ -22,9 +13,7 @@ var KEYCODE_DOWN = 40;
 
 //this is the initialization method that is called when the web page is first opened.
 function init() {
-	
 	canvas = document.getElementById("gameCanvas");
-
 	//stage is the 'parent' from which all visuals of the game are descended from
 	stage = new createjs.Stage(canvas);
 
@@ -43,9 +32,6 @@ function init() {
 	//sets up the animation loop
 	createjs.Ticker.addEventListener("tick", tick);
 	createjs.Ticker.framerate = 60;
-	
-
-
 
 }
 
@@ -54,7 +40,8 @@ function loadAssets() {
 
 	//the manifest is a mapping of these files to an id that you can use 
 	var manifest = [
-		{src: "sprite.png", id: "pokemon"}
+		{src: "./sprites/Yyoungster.png", id: "player"},
+		{src: "./sprites/3848.png", id: "map"}
 		];
 	
 	loader = new createjs.LoadQueue();
@@ -66,28 +53,28 @@ function loadAssets() {
 
 //this is called when the assets in loadAssets have been loaded fully. 
 function handleFileComplete(event) {
+	player = new createjs.Bitmap(loader.getResult("player"));
+	player.x = canvas.width / 2;
 
-	bitmap = new createjs.Bitmap(loader.getResult("pokemon"));
-	bitmap.x = canvas.width / 2;
-	
-	stage.addChild(bitmap);
-	
+	map = new createjs.Bitmap(loader.getResult("map"));
+
+	stage.addChild(map);
+	stage.addChild(player);
 }
 
 //this function is the 'animation loop'; it is called every x ms where x is Ticker.framerate
 function tick(event) {
-
-	var x = bitmap.x;
-	var y = bitmap.y;
+	var x = player.x;
+	var y = player.y;
 
 	if(x < 0)
-		bitmap.x = 0;
+		player.x = 0;
 	if(x > 410)
-		bitmap.x= 410;
+		player.x= 410;
 	if(y < 0)
-		bitmap.y = 0;
+		player.y = 0;
 	if(y > 250)
-		bitmap.y = 250;
+		player.y = 250;
 	
 	//update stage
 	stage.update(event);
@@ -99,21 +86,18 @@ function handleKeyDown(e) {
 		var e = window.event;
 	switch(e.keyCode) {
 		case KEYCODE_RIGHT:
-			bitmap.x+=5;
+			player.x+=5;
 			return false;
 		case KEYCODE_LEFT:
-			bitmap.x-=5;
+			player.x-=5;
 			return false;
 		case KEYCODE_UP:
-			bitmap.y-=5;
+			player.y-=5;
 			return false;
 		case KEYCODE_DOWN:
-			bitmap.y+=5;
-			return false;	
-
+			player.y+=5;
+			return false;
 	}
-
-
 }
 
 function handleKeyUp(e) {
