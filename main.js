@@ -95,15 +95,16 @@ function tick(event) {
 		player.y = 70;
 	if(y > 510)
 		player.y = 510;
-	if(y > 260 && y < 385 && x > 815 && x > 900)
-		if(y > 260)
-			player.y = 260;
-		else if(y < 385)
-			player.y = 385;
-		else if(x > 815)
-			player.x = 815;
-		else
-			player.x = 900;
+	if(y > 260 && y <= 385 && x > 815 && x <= 900) {
+		if (y < 260+(385-260)/2)
+			player.y = player.y-5;
+		else if (y > 260+(395-260)/2)
+			player.y = player.y+5;
+		else if (x < 815+(900-815)/2)
+			player.x = player.x-5;
+		else if (x > 815+(900-815)/2)
+			player.x = player.x+5;
+	}
 
 	//update stage
 	stage.update(event);
