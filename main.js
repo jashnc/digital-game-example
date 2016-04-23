@@ -1,16 +1,4 @@
-var canvas;
-var stage;
-
-var message;
-var bitmap;
-
-var player;
-var map;
-
-var loader;
-var ticker;
-
-var preload;
+var canvas, stage, message, player, map, loader, ticker, preload;
 
 //set up keyboard events
 document.onkeydown = handleKeyDown;
@@ -75,7 +63,8 @@ function handleFileComplete(event) {
 	
 	player = new createjs.Bitmap(loader.getResult("player"));
 	map = new createjs.Bitmap(loader.getResult("map"));
-	player.x = canvas.width / 2;
+	player.x = 160;
+	player.y = 195;
 
 	stage.addChild(map);
 	stage.addChild(player);
@@ -87,7 +76,7 @@ function tick(event) {
 	var x = player.x;
 	var y = player.y;
 
-	if(x < 150)
+	/*if(x < 150)
 		player.x = 150;
 	if(x > 900)
 		player.x= 900;
@@ -105,35 +94,81 @@ function tick(event) {
 		else if (x > 815+(900-815)/2)
 			player.x = player.x+5;
 	}
+	if(y > 260 && y <= 385 && x > 815 && x <= 900) {
+		if (y < 260+(385-260)/2)
+			player.y = player.y-5;
+		else if (y > 260+(395-260)/2)
+			player.y = player.y+5;
+		else if (x < 815+(900-815)/2)
+			player.x = player.x-5;
+		else if (x > 815+(900-815)/2)
+			player.x = player.x+5;
+	}*/
 
 	//update stage
 	stage.update(event);
 }
+function inBounds(x, y){
+	//return true;
+	//very efficient and fantastic code do not copy pls
+	if ((x >= 155 && y >= 190 && x <= 220 && y <= 510) ||
+		(x >= 155 && y >= 475 && x <= 475 && y <= 510) ||
+		(x >= 220 && y >= 410 && x <= 380 && y <= 510) ||
+		(x >= 280 && y >= 390 && x <= 380 && y <= 510) ||
+		(x >= 280 && y >= 60 && x <= 350 && y <= 510) ||
+		(x >= 280 && y >= 60 && x <= 475 && y <= 145) ||
+		(x >= 410 && y >= 60 && x <= 475 && y <= 350) ||
+		(x >= 440 && y >= 350 && x <= 620 && y <= 385) ||
+		(x >= 855 && x <= 910 && y >= 375 && y <= 510) ||
+		(x >= 730 && x <= 910 && y >= 375 && y <= 375) ||
+		(x >= 730 && x <= 795 && y >= 455 && y <= 510) ||
+		(x >= 730 && x <= 815 && y >= 220 && y <= 455) ||
+		(x >= 535 && x <= 910 && y >= 220 && y <= 260) ||
+		(x >= 855 && x <= 910 && y >= 55 && y <= 260) ||
+		(x >= 535 && x <= 910 && y >= 55 && y <= 100) ||
+		(x >= 535 && x <= 605 && y >= 55 && y <= 385) ||
+		(x >= 535 && x <= 620 && y >= 305 && y <= 385) ||
+		(x >= 440 && x <= 620 && y >= 350 && y <= 385) ||
+		(x >= 535 && y >= 215 && x <= 780 && y <= 290) ||
+		(x >= 730 && y >= 375 && x <= 905 && y <= 450) ||
+			//this box used to fix david's trolling
+		(x >= 535 && y >= 225 && x <= 620 && y <= 385))
+		return true;
+	return false;
+}
+
 
 //handles keyboard events
 function handleKeyDown(e) {
-	console.log(player.x);
-	console.log(player.y);
 	if(!e)
 		var e = window.event;
 	switch(e.keyCode) {
 		case KEYCODE_RIGHT:
-			player.x+=5;
+			if(inBounds(player.x + 5, player.y)){
+				player.x += 5;
+			}
 			return false;
 		case KEYCODE_LEFT:
-			player.x-=5;
+			if(inBounds(player.x - 5, player.y)){
+				player.x -= 5;
+			}
 			return false;
 		case KEYCODE_UP:
-			player.y-=5;
+			if(inBounds(player.x, player.y - 5)){
+				player.y -= 5;
+			}
 			return false;
 		case KEYCODE_DOWN:
-			player.y+=5;
+			if(inBounds(player.x, player.y + 5)){
+				player.y += 5;
+			}
 			return false;
-
+		case KEYCODE_SPACE:
+			console.log("(" + player.x + ", " + player.y + ")");
 	}
-
-
 }
+
+
 
 function handleKeyUp(e) {
 
