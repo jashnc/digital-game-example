@@ -2,10 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="181ea5f8-6edd-4771-b16a-3e9578e6ce70" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/sprite.png" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sprites/Yyoungster.png" afterPath="$PROJECT_DIR$/sprites/Yyoungster.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README" afterPath="$PROJECT_DIR$/README" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/main.js" afterPath="$PROJECT_DIR$/main.js" />
     </list>
     <ignored path="crop_cross.iws" />
@@ -30,8 +26,8 @@
       <file leaf-file-name="main.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="510">
-              <caret line="105" column="27" selection-start-line="105" selection-start-column="27" selection-end-line="105" selection-end-column="27" />
+            <state relative-caret-position="518">
+              <caret line="102" column="31" selection-start-line="102" selection-start-column="31" selection-end-line="102" selection-end-column="31" />
               <folding />
             </state>
           </provider>
@@ -248,12 +244,12 @@
       <option name="presentableId" value="Default" />
       <updated>1461360495674</updated>
       <workItem from="1461360497842" duration="4497000" />
-      <workItem from="1461366851511" duration="2115000" />
+      <workItem from="1461366851511" duration="3048000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="6612000" />
+    <option name="totallyTimeSpent" value="7545000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1280" height="800" extended-state="0" />
@@ -351,8 +347,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/main.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="510">
-          <caret line="105" column="27" selection-start-line="105" selection-start-column="27" selection-end-line="105" selection-end-column="27" />
+        <state relative-caret-position="518">
+          <caret line="102" column="31" selection-start-line="102" selection-start-column="31" selection-end-line="102" selection-end-column="31" />
           <folding />
         </state>
       </provider>
