@@ -1,4 +1,5 @@
-var canvas, stage, message, player, map, loader, ticker, preload;
+
+var canvas, stage, player, map, loader;
 
 //set up keyboard events
 document.onkeydown = handleKeyDown;
@@ -10,6 +11,10 @@ var KEYCODE_UP = 38;		//useful keycode
 var KEYCODE_LEFT = 37;		//useful keycode
 var KEYCODE_RIGHT = 39;		//useful keycode
 var KEYCODE_DOWN = 40;
+
+var seedCounter = 0;
+var numSeeds = 0;
+var seeds = [];
 
 //this is the initialization method that is called when the web page is first opened.
 function init() {
@@ -35,9 +40,6 @@ function init() {
 	createjs.Ticker.addEventListener("tick", tick);
 	createjs.Ticker.framerate = 60;
 
-
-
-
 }
 
 //this method is used to load all our sprites/sounds, etc.
@@ -46,13 +48,15 @@ function loadAssets() {
 	//the manifest is a mapping of these files to an id that you can use
 	var manifest = [
 		{src: "sprites/Yyoungster.png", id: "player"},
-		{src: "sprites/3848.png", id:"map"}
+		{src: "sprites/3848.png", id:"map"},
+		{src: "sprites/seed.png", id:"seed"}
 	];
 
 	loader = new createjs.LoadQueue();
 	loader.addEventListener("fileload", handleFileComplete);
 	loader.loadFile("sprites/Yyoungster.png");
 	loader.loadFile("sprites/3848.png");
+	loader.loadFile("sprites/seed.png");
 	loader.loadManifest(manifest);
 }
 
@@ -60,9 +64,10 @@ function loadAssets() {
 //this is called when the assets in loadAssets have been loaded fully.
 function handleFileComplete(event) {
 
-	
 	player = new createjs.Bitmap(loader.getResult("player"));
 	map = new createjs.Bitmap(loader.getResult("map"));
+
+    
 	player.x = 160;
 	player.y = 195;
 
@@ -72,38 +77,13 @@ function handleFileComplete(event) {
 
 //this function is the 'animation loop'; it is called every x ms where x is Ticker.framerate
 function tick(event) {
-
+    if(seedCounter % 250 == 0 && numSeeds <= 5){
+        randomSeedPlacer();
+        numSeeds++;
+    }
+    seedCounter++;
 	var x = player.x;
 	var y = player.y;
-
-	/*if(x < 150)
-		player.x = 150;
-	if(x > 900)
-		player.x= 900;
-	if(y < 70)
-		player.y = 70;
-	if(y > 510)
-		player.y = 510;
-	if(y > 260 && y <= 385 && x > 815 && x <= 900) {
-		if (y < 260+(385-260)/2)
-			player.y = player.y-5;
-		else if (y > 260+(395-260)/2)
-			player.y = player.y+5;
-		else if (x < 815+(900-815)/2)
-			player.x = player.x-5;
-		else if (x > 815+(900-815)/2)
-			player.x = player.x+5;
-	}
-	if(y > 260 && y <= 385 && x > 815 && x <= 900) {
-		if (y < 260+(385-260)/2)
-			player.y = player.y-5;
-		else if (y > 260+(395-260)/2)
-			player.y = player.y+5;
-		else if (x < 815+(900-815)/2)
-			player.x = player.x-5;
-		else if (x > 815+(900-815)/2)
-			player.x = player.x+5;
-	}*/
 
 	//update stage
 	stage.update(event);
@@ -169,7 +149,49 @@ function handleKeyDown(e) {
 }
 
 
+function randomSeedPlacer(){
+	do {
+		var randomX = Math.random()*canvas.width;
+		var randomY = Math.random()*canvas.height;
+	}
+	while(!inBounds(randomX, randomY));
+    
+    var seed = new Seed(randomX, randomY);
+    var seedImage = new createjs.Bitmap(loader.getResult("seed"));
+    seedImage.x = randomX;
+    seedImage.y = randomY;
+    stage.addChild(seedImage);
+    seeds.push(seed);
+	
+}
+
+function randomNpcPlacer(){
+	do {
+		randomX = Math.random()*canvas.width;
+		randomY = Math.random()*canvas.height;
+	}
+	while(!inBounds(randomX, randomY));
+
+    
+}
+
 
 function handleKeyUp(e) {
+
+}
+
+var genotypes = ["Aa", "AA", "Bb", "BB", "Cc", "CC"];
+
+function Npc(x, y, png){
+    this.x = x;
+    this.y = y;
+    this.png = png;
+}
+
+function Seed(x, y){
+    this.x = x;
+    this.y = y;
+    var index = Math.random()*genotypes.length;
+    this.genotype = genotypes[index];
 
 }
