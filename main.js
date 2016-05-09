@@ -13,13 +13,16 @@ var KEYCODE_RIGHT = 39;		//useful keycode
 var KEYCODE_DOWN = 40;
 var KEYCODE_A = 65;			//key A, any other key would be 65 + the offset (i.e. B is 65+1)
 var KEYCODE_H = 72;
+var KEYCODE_R = 82;
 
-var seedCounter = 0;
+var counter = 0;
 var numSeeds = 0;
 var numNpcs = 0;
 var seeds = [];
 var npcs = [];
 var inventory_arr = [];
+var seedImages = [];
+var running = false;
 
 //this is the initialization method that is called when the web page is first opened.
 function init() {
@@ -114,17 +117,19 @@ function handleFileComplete(event) {
 
 //this function is the 'animation loop'; it is called every x ms where x is Ticker.framerate
 function tick(event) {
-    if(seedCounter % 250 == 0){
-        if (numSeeds <= 5) {
+    if(counter % 250 == 0 && counter != 0){
+        if (numSeeds < 5) {
+			numSeeds++;
             randomSeedPlacer();
-            numSeeds++;
-        }
-        if (numNpcs <= 5){
-            randomNpcPlacer();
-            numNpcs++;
         }
     }
-    seedCounter++;
+	if(counter % 750 == 0 && counter != 0){
+		if (numNpcs < 5){
+			numNpcs++;
+			randomNpcPlacer();
+		}
+	}
+	counter++;
 	var x = player.x;
 	var y = player.y;
 
@@ -162,37 +167,72 @@ function inBounds(x, y){
 
 //handles keyboard events
 function handleKeyDown(e) {
-	if(!e)
+	if(!e) {
 		var e = window.event;
+	}
 	switch(e.keyCode) {
 		case KEYCODE_RIGHT:
-			if(inBounds(player.x + 5, player.y)){
-				player.x += 5;
+			var movement = running ? 10 : 5;
+			if(inBounds(player.x + movement, player.y)) {
+				player.x += movement;
+				var seed = pickUpSeeds(player.x, player.y);
+				if (seed != null){
+					console.log("deez nuts");
+					addToInventory(seed);
+					removeSeed(seed);
+				}
 			}
 			return false;
 		case KEYCODE_LEFT:
-			if(inBounds(player.x - 5, player.y)){
-				player.x -= 5;
+			var movement = running ? 10 : 5;
+			if(inBounds(player.x - movement, player.y)){
+				player.x -= movement;
+				var seed = pickUpSeeds(player.x, player.y);
+				if (seed != null){
+					console.log("deez nuts");
+					addToInventory(seed);
+					removeSeed(seed);
+				}
 			}
 			return false;
 		case KEYCODE_UP:
-			if(inBounds(player.x, player.y - 5)){
-				player.y -= 5;
+			var movement = running ? 10 : 5;
+			if(inBounds(player.x, player.y - movement)){
+				player.y -= movement;
+				var seed = pickUpSeeds(player.x, player.y);
+				if (seed != null){
+					console.log("deez nuts");
+					addToInventory(seed);
+					removeSeed(seed);
+				}
 			}
 			return false;
 		case KEYCODE_DOWN:
-			if(inBounds(player.x, player.y + 5)){
-				player.y += 5;
+			var movement = running ? 10 : 5;
+			if(inBounds(player.x, player.y + movement)){
+				player.y += movement;
+				var seed = pickUpSeeds(player.x, player.y);
+				if (seed != null){
+					console.log("deez nuts");
+					addToInventory(seed);
+					removeSeed(seed);
+				}
 			}
 			return false;
 		case KEYCODE_SPACE:
-			console.log("(" + player.x + ", " + player.y + ")");
-            paintInventory();
+			console.log("player (" + player.x + ", " + player.y + ")");
+			for(var i = 0; i < seeds.length; i++) {
+				console.log("seed (" + seeds[i].x + ", " + seeds[i].y + ")");
+			}
+			console.log(numSeeds);
+            console.log(inventory_arr);
             return false;
 		case KEYCODE_H:
 			console.log("Help menu");
             helpText();
             return false;
+		case KEYCODE_R:
+			running = true;
 		default:
 			console.log(e.keyCode);
 	}
@@ -253,6 +293,7 @@ function randomSeedPlacer(){
     seedImage.y = rand[1];
     stage.addChild(seedImage);
     seeds.push(seed);
+	seedImages.push(seedImage);
 }
 
 function randomNpcPlacer(){
@@ -270,10 +311,18 @@ function randomNpcPlacer(){
 
 
 function handleKeyUp(e) {
-
+	if(!e)
+		var e = window.event;
+	switch(e.keyCode) {
+		case KEYCODE_R:
+			running = false;
+		default:
+			var deeznuts = 'deez nuts hahahaha';
+			//be a fucking bagel
+	}
 }
 
-var genotypes = ["Aa", "AA", "Bb", "BB", "Cc", "CC"];
+var genotypes = ["Aa", "AA", "aa", "Bb", "BB", "bb", "Cc", "CC", "cc"];
 
 function Npc(x, y, png){
     this.x = x;
@@ -284,30 +333,63 @@ function Npc(x, y, png){
 function Seed(x, y){
     this.x = x;
     this.y = y;
-    var index = Math.random()*genotypes.length;
+    var index = Math.floor(Math.random()*genotypes.length);
     this.genotype = genotypes[index];
-
 }
 
 function addToInventory(seed) {
-    inventory_arr.push("dank");
+    inventory_arr.push(seed);
+	paintInventory();
 }
+
 function paintInventory() {
-    addToInventory("example");
-    addToInventory("yo");
-    console.log(inventory_arr.length);
     for(var i = 0; i < inventory_arr.length; i++) {
         var seed = new createjs.Bitmap(loader.getResult("seed"));
+		(function(index) {
+			seed.addEventListener("mouseover", function () {
+				console.log(inventory_arr[index].genotype)
+			});
+		})(i);
         seed.setTransform((i*132)+53, 630, 2, 2);
-        /*
-        seed.x = (i*132) + 20;
-        seed.y = 620;
-        seed.scaleX(5);
-        seed.scaleY(5);*/
         stage.addChild(seed);
+		messageField = new createjs.Text(inventory_arr[i].genotype, "bold 24px Arial", "#FFFFFF");
+		messageField.x = ((i*132)+53);
+		messageField.y = 674;
+		stage.addChild(messageField);
 
     }
 }
+
+function pickUpSeeds(x, y){
+	if(inventory_arr.length == 8){
+		return null;
+	}
+	for (var i = 0; i < seeds.length; i++){
+		if(seeds[i] != null) {
+			var seedCenterX = seeds[i].x + 10;
+
+			var seedCenterY = seeds[i].y + 10;
+
+			if (Math.abs(x - seedCenterX) < 20 && Math.abs(y - seedCenterY) < 20) {
+				stage.removeChild(seedImages[i]);
+				seedImages.splice(i, 1);
+				return seeds[i];
+			}
+		}
+	}
+	return null;
+}
+
+function removeSeed(seed) {
+	for(var i = 0; i < seeds.length; i++) {
+		if(seeds[i] === seed) {
+			seeds.splice(i, 1);
+			numSeeds--;
+			break;
+		}
+	}
+}
+
 /**
  * Displays the help text on the screen. This is called when the user presses H
  */
