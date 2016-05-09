@@ -1,5 +1,5 @@
 
-var canvas, stage, player, map, loader;
+var canvas, stage, player, map, loader, inventory;
 
 //set up keyboard events
 document.onkeydown = handleKeyDown;
@@ -15,7 +15,7 @@ var KEYCODE_DOWN = 40;
 var seedCounter = 0;
 var numSeeds = 0;
 var seeds = [];
-
+var inventory_arr = [];
 //this is the initialization method that is called when the web page is first opened.
 function init() {
 
@@ -49,23 +49,31 @@ function loadAssets() {
 	var manifest = [
 		{src: "sprites/Yyoungster.png", id: "player"},
 		{src: "sprites/3848.png", id:"map"},
-		{src: "sprites/seed.png", id:"seed"}
+		{src: "sprites/seed.png", id:"seed"},
+		{src: "sprites/inventory.png", id:"inventory"}
 	];
 
 	loader = new createjs.LoadQueue();
 	loader.addEventListener("fileload", handleFileComplete);
+	//loader.loadFile(manifest);
+	/*
 	loader.loadFile("sprites/Yyoungster.png");
 	loader.loadFile("sprites/3848.png");
 	loader.loadFile("sprites/seed.png");
+	loader.loadFile("sprites/inventory.png");*/
 	loader.loadManifest(manifest);
 }
 
 
 //this is called when the assets in loadAssets have been loaded fully.
 function handleFileComplete(event) {
-
+	console.log("loaded");
 	player = new createjs.Bitmap(loader.getResult("player"));
 	map = new createjs.Bitmap(loader.getResult("map"));
+	inventory = new createjs.Bitmap(loader.getResult("inventory"))
+
+	inventory.x = 12;
+	inventory.y = 600;
 
     
 	player.x = 160;
@@ -73,6 +81,8 @@ function handleFileComplete(event) {
 
 	stage.addChild(map);
 	stage.addChild(player);
+	stage.addChild(inventory);
+	
 }
 
 //this function is the 'animation loop'; it is called every x ms where x is Ticker.framerate
@@ -145,6 +155,7 @@ function handleKeyDown(e) {
 			return false;
 		case KEYCODE_SPACE:
 			console.log("(" + player.x + ", " + player.y + ")");
+			paintInventory();
 	}
 }
 
@@ -173,6 +184,25 @@ function randomNpcPlacer(){
 	while(!inBounds(randomX, randomY));
 
     
+}
+function addToInventory(seed) {
+	inventory_arr.push("dank");
+}
+function paintInventory() {
+	addToInventory("example");
+	addToInventory("yo");
+	console.log(inventory_arr.length);
+	for(var i = 0; i < inventory_arr.length; i++) {
+		var seed = new createjs.Bitmap(loader.getResult("seed"));
+		seed.setTransform((i*132)+53, 630, 2, 2);
+		/*
+		seed.x = (i*132) + 20;
+		seed.y = 620;
+		seed.scaleX(5);
+		seed.scaleY(5);*/
+		stage.addChild(seed);
+
+	}
 }
 
 
