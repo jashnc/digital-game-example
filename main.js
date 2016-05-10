@@ -1,4 +1,4 @@
-var canvas, stage, player, map, loader, help, helpToggle, help_bg, help_display, inventory, punnett;
+var canvas, stage, player, map, loader, help, helpToggle, help_bg, help_display, inventory, punnett, staminaShape;
 
 //set up keyboard events
 document.onkeydown = handleKeyDown;
@@ -14,6 +14,15 @@ var KEYCODE_A = 65;         //key A, any other key would be 65 + the offset (i.e
 var KEYCODE_H = 72;
 var KEYCODE_R = 82;
 var KEYCODE_P = 80;
+var KEYCODE_T = 84;
+var KEYCODE_1 = 49;
+var KEYCODE_2 = 50;
+var KEYCODE_3 = 51;
+var KEYCODE_4 = 52;
+var KEYCODE_5 = 53;
+var KEYCODE_6 = 54;
+var KEYCODE_7 = 55;
+var KEYCODE_8 = 56;
 
 var counter = 0;
 var numSeeds = 0;
@@ -23,6 +32,7 @@ var npcs = [];
 var inventory_arr = [];
 var seedImages = [];
 var speechBubbles = [];
+var speechTexts = [];
 var running = false;
 var punnettToggle = false;
 var leftSide = false;
@@ -31,7 +41,13 @@ var punnetText = [];
 var crossButton = [];
 var punnettSeeds = [];
 var inventorySeeds = [];
+var messageFields = [];
 var probabilities = {};
+var npcImages = [];
+var score = 49;
+var score_text = " ";
+var stamina = 400;
+var noRun = false;
 
 //this is the initialization method that is called when the web page is first opened.
 function init() {
@@ -123,10 +139,28 @@ function handleFileComplete(event) {
 	stage.addChild(player);
 	stage.addChild(inventory);
 
+	var shape = new createjs.Shape();
+	shape.graphics.beginFill("#000000").drawRect(950, 50, 100, 75);
+	stage.addChild(shape);
+	score_text = new createjs.Text("Score: \n" + "    " + score,
+		"24px Arial", "#FFFFFF");
+	score_text.x = 969;
+	score_text.y = 60;
+	stage.addChild(score_text);
+
+	staminaShape = new createjs.Shape();
+	staminaShape.graphics.beginStroke("#000");
+	staminaShape.graphics.setStrokeStyle(1);
+	staminaShape.snapToPixel = true;
+	staminaShape.graphics.beginFill("#FFA500").drawRect(977, 150, 50, 400);
+	stage.addChild(staminaShape);
 }
 
 //this function is the 'animation loop'; it is called every x ms where x is Ticker.framerate
 function tick(event) {
+	if(counter == 10000){
+		counter = 0;
+	}
 	if(counter % 250 == 0 && counter != 0){
 		if (numSeeds < 5) {
 			numSeeds++;
@@ -140,6 +174,32 @@ function tick(event) {
 
 		}
 	}
+	if(counter % 400 == 0 && counter != 0){
+		score--;
+		updateScore();
+	}
+	if(score >= 50)
+		endGame();
+	if(stamina == 0){
+		noRun = true;
+	}
+	if(running == true){
+		if(stamina == 0){
+			noRun = true;
+		}
+		else {
+			stamina -= 1;
+		}
+	}
+	if(running == false && stamina != 400){
+		if(stamina + 1.5 > 400){
+			stamina = 400;
+		}
+		else {
+			stamina += 1.5;
+		}
+	}
+	updateStamina();
 	counter++;
 	var x = player.x;
 	var y = player.y;
@@ -147,6 +207,7 @@ function tick(event) {
 	//update stage
 	stage.update(event);
 }
+
 function inBounds(x, y){
 	//return true;
 	//very efficient and fantastic code do not copy pls
@@ -183,71 +244,115 @@ function handleKeyDown(e) {
 	}
 	switch(e.keyCode) {
 		case KEYCODE_RIGHT:
-			var movement = running ? 10 : 5;
+			var movement = running ? 15 : 5;
+			if(stamina <= 0){
+				noRun = true;
+				running = false;
+			}
+			if(noRun){
+				movement = 5;
+			}
 			if(inBounds(player.x + movement, player.y)) {
 				player.x += movement;
 				var seed = pickUpSeeds(player.x, player.y);
 				if (seed != null){
-					console.log("deez nuts");
 					addToInventory(seed);
 					removeSeed(seed);
 				}
 			}
 			return false;
 		case KEYCODE_LEFT:
-			var movement = running ? 10 : 5;
+			var movement = running ? 15 : 5;
+			if(stamina <= 0){
+				noRun = true;
+				running = false;
+			}
+			if(noRun){
+				movement = 5;
+			}
 			if(inBounds(player.x - movement, player.y)){
 				player.x -= movement;
 				var seed = pickUpSeeds(player.x, player.y);
 				if (seed != null){
-					console.log("deez nuts");
 					addToInventory(seed);
 					removeSeed(seed);
 				}
 			}
 			return false;
 		case KEYCODE_UP:
-			var movement = running ? 10 : 5;
+			var movement = running ? 15 : 5;
+			if(stamina <= 0){
+				noRun = true;
+				running = false;
+			}
+			if(noRun){
+				movement = 5;
+			}
 			if(inBounds(player.x, player.y - movement)){
 				player.y -= movement;
 				var seed = pickUpSeeds(player.x, player.y);
 				if (seed != null){
-					console.log("deez nuts");
 					addToInventory(seed);
 					removeSeed(seed);
 				}
 			}
 			return false;
 		case KEYCODE_DOWN:
-			var movement = running ? 10 : 5;
+			var movement = running ? 15 : 5;
+			if(stamina <= 0){
+				noRun = true;
+				running = false;
+			}
+			if(noRun){
+				movement = 5;
+			}
 			if(inBounds(player.x, player.y + movement)){
 				player.y += movement;
 				var seed = pickUpSeeds(player.x, player.y);
 				if (seed != null){
-					console.log("deez nuts");
 					addToInventory(seed);
 					removeSeed(seed);
 				}
 			}
 			return false;
 		case KEYCODE_SPACE:
-			console.log("player (" + player.x + ", " + player.y + ")");
+			/*console.log("player (" + player.x + ", " + player.y + ")");
 			for(var i = 0; i < seeds.length; i++) {
 				console.log("seed (" + seeds[i].x + ", " + seeds[i].y + ")");
 			}
 			console.log(numSeeds);
-			console.log(inventory_arr);
+			console.log(inventory_arr);*/
 			return false;
 		case KEYCODE_H:
-			console.log("Help menu");
 			helpText();
 			return false;
 		case KEYCODE_R:
-			running = true;
+			if(noRun){
+				running = false;
+			}
+			else {
+				running = true;
+			}
 			return false;
 		case KEYCODE_P:
 			punnettToggle = !punnettToggle;
+			for(var j = 0; j < inventory_arr.length; j++){
+				inventory_arr[j].clicked = false;
+			}
 			drawPunnett(punnettToggle);
+			return false;
+		case KEYCODE_T:
+			giveSeed();
+			return false;
+		case KEYCODE_1:
+		case KEYCODE_2:
+		case KEYCODE_3:
+		case KEYCODE_4:
+		case KEYCODE_5:
+		case KEYCODE_6:
+		case KEYCODE_7:
+		case KEYCODE_8:
+			deleteSeed(e.keyCode);
 			return false;
 		default:
 			console.log(e.keyCode);
@@ -315,6 +420,7 @@ function randomNpcPlacer(){
 	npcImage.x = rand[0];
 	npcImage.y = rand[1];
 	stage.addChild(npcImage);
+	npcImages.push(npcImage);
 	npcs.push(npc);
 	var speechbubble = new createjs.Bitmap(loader.getResult("speechbubble"));
 	speechbubble.x = npcImage.x;
@@ -325,6 +431,7 @@ function randomNpcPlacer(){
 	stage.addChild(speechbubble);
 	speechBubbles.push(speechbubble);
 	stage.addChild(speechText);
+	speechTexts.push(speechText);
 }
 
 
@@ -334,14 +441,11 @@ function handleKeyUp(e) {
 	switch(e.keyCode) {
 		case KEYCODE_R:
 			running = false;
-		default:
-			var deeznuts = 'deez nuts hahahaha';
-		//be a fucking bagel
 	}
 }
 
-var genotypes = ["Aa", "AA", "aa", "Bb", "bb", "Cc", "CC"];
-var genotypeCrosses = ["BB", "cc", "Ab", "Ba", "Ac"];
+var genotypes = ["Aa", "AA", "aa", "BB", "Bb", "bb", "Cc", "CC", "cc"];
+var genotypeCrosses = ["Ab", "Ac", "Ba", "Bc", "Ca", "Cb", "ab", "ac", "ba", "bc", "ca", "cb"];
 
 function Npc(x, y, png){
 	this.x = x;
@@ -354,55 +458,65 @@ function Seed(x, y){
 	this.y = y;
 	var index = Math.floor(Math.random()*genotypes.length);
 	this.genotype = genotypes[index];
+	this.clicked = false;
 }
 
 function addToInventory(seed) {
+	score++;
+	updateScore();
 	inventory_arr.push(seed);
 	paintInventory();
 }
 
 function paintInventory() {
+	for(var kush = 0; kush < inventorySeeds.length; kush++){
+		stage.removeChild(inventorySeeds[kush]);
+		stage.removeChild(messageFields[kush]);
+	}
+	inventorySeeds = [];
+	messageFields = [];
 	for(var i = 0; i < inventory_arr.length; i++) {
 		var seed = new createjs.Bitmap(loader.getResult("seed"));
 		(function(index) {
 			seed.addEventListener("click", function () {
-				if (!leftSide){
-					var otherSeed = new createjs.Bitmap(loader.getResult("seed"));
-					otherSeed.setTransform(230, 320, 2, 2);
-
-					stage.addChild(otherSeed);
-					punnettImages.push(otherSeed);
-					var firstG = new createjs.Text(inventory_arr[index].genotype.substring(0, 1), "bold 36px Arial", "#FFFFFF");
-					var secondG = new createjs.Text(inventory_arr[index].genotype.substring(1, 2), "bold 36px Arial", "#FFFFFF");
-					firstG.x = 270;
-					firstG.y = 220;
-					secondG.x = 270;
-					secondG.y = 420;
-					stage.addChild(firstG);
-					stage.addChild(secondG);
-					punnetText.push(firstG);
-					punnetText.push(secondG);
-					leftSide = !leftSide;
-					punnettSeeds.push(inventory_arr[index]);
-				}
-				else {
-					var otherSeed = new createjs.Bitmap(loader.getResult("seed"));
-					otherSeed.setTransform(480, 80, 2, 2);
-
-					stage.addChild(otherSeed);
-					punnettImages.push(otherSeed);
-					var firstG = new createjs.Text(inventory_arr[index].genotype.substring(0, 1), "bold 36px Arial", "#FFFFFF");
-					var secondG = new createjs.Text(inventory_arr[index].genotype.substring(1, 2), "bold 36px Arial", "#FFFFFF");
-					firstG.x = 400;
-					firstG.y = 100;
-					secondG.x = 600;
-					secondG.y = 100;
-					stage.addChild(firstG);
-					stage.addChild(secondG);
-					punnetText.push(firstG);
-					punnetText.push(secondG);
-					leftSide = !leftSide;
-					punnettSeeds.push(inventory_arr[index]);
+				if(!inventory_arr[index].clicked) {
+					inventory_arr[index].clicked = true;
+					if (!leftSide) {
+						var otherSeed = new createjs.Bitmap(loader.getResult("seed"));
+						otherSeed.setTransform(230, 320, 2, 2);
+						stage.addChild(otherSeed);
+						punnettImages.push(otherSeed);
+						var firstG = new createjs.Text(inventory_arr[index].genotype.substring(0, 1), "bold 36px Arial", "#FFFFFF");
+						var secondG = new createjs.Text(inventory_arr[index].genotype.substring(1, 2), "bold 36px Arial", "#FFFFFF");
+						firstG.x = 270;
+						firstG.y = 220;
+						secondG.x = 270;
+						secondG.y = 420;
+						stage.addChild(firstG);
+						stage.addChild(secondG);
+						punnetText.push(firstG);
+						punnetText.push(secondG);
+						leftSide = !leftSide;
+						punnettSeeds.push(inventory_arr[index]);
+					}
+					else {
+						var otherSeed = new createjs.Bitmap(loader.getResult("seed"));
+						otherSeed.setTransform(480, 80, 2, 2);
+						stage.addChild(otherSeed);
+						punnettImages.push(otherSeed);
+						var firstG = new createjs.Text(inventory_arr[index].genotype.substring(0, 1), "bold 36px Arial", "#FFFFFF");
+						var secondG = new createjs.Text(inventory_arr[index].genotype.substring(1, 2), "bold 36px Arial", "#FFFFFF");
+						firstG.x = 400;
+						firstG.y = 100;
+						secondG.x = 600;
+						secondG.y = 100;
+						stage.addChild(firstG);
+						stage.addChild(secondG);
+						punnetText.push(firstG);
+						punnetText.push(secondG);
+						leftSide = !leftSide;
+						punnettSeeds.push(inventory_arr[index]);
+					}
 				}
 			});
 		})(i);
@@ -413,7 +527,7 @@ function paintInventory() {
 		messageField.y = 674;
 		stage.addChild(messageField);
 		inventorySeeds.push(seed);
-		inventorySeeds.push(messageField);
+		messageFields.push(messageField);
 	}
 }
 
@@ -473,14 +587,30 @@ function drawPunnett(punnettToggle){
 		text.y = 325;
 		crossButton.push(text);
 		var shape = new createjs.Shape();
-		shape.graphics.beginFill("#5ab738").drawRect(0, 0, 100, 50);
-		shape.x = 455;
-		shape.y = 320;
+		shape.graphics.beginFill("#5ab738").drawRect(455, 320, 100, 50);
+		stage.addChild(shape);
+		crossButton.push(shape);
+		stage.addChild(text);
 		shape.addEventListener("click", function(){
 			var topLeft = punnetText[0].text + punnetText[2].text;
+			console.log(punnetText[2].text < punnetText[0].text);
+			console.log(punnetText[2].text > punnetText[0].text);
+			if(punnetText[2].text < punnetText[0].text) {
+				topLeft = punnetText[2].text + punnetText[0].text;
+			}
+
 			var topRight = punnetText[0].text + punnetText[3].text;
+			if(punnetText[3].text < punnetText[0].text) {
+				topRight = punnetText[3].text + punnetText[0].text;
+			}
 			var bottomLeft = punnetText[1].text + punnetText[2].text;
+			if(punnetText[2].text < punnetText[1].text) {
+				bottomLeft = punnetText[2].text + punnetText[1].text;
+			}
 			var bottomRight = punnetText[1].text + punnetText[3].text;
+			if(punnetText[3].text < punnetText[1].text) {
+				bottomRight= punnetText[3].text + punnetText[1].text;
+			}
 			crossTypes(topLeft, 380, 220);
 			crossTypes(topRight, 580, 220);
 			crossTypes(bottomLeft, 380, 420);
@@ -488,27 +618,23 @@ function drawPunnett(punnettToggle){
 			var rand = Math.random();
 			var found = false;
 			var text = "";
-			console.log("crossing");
+			var keys = Object.keys(probabilities);
 			while (!found){
-				for (var key in probabilities){
-					console.log(probabilities[key]/4 + " is prob and rand is" + rand);
-					if (probabilities[key]/4 <= rand){
-						found = true;
-						text = key;
-					}
+				var randIndex = Math.floor(Math.random()*keys.length);
+				console.log(randIndex + " " + probabilities[keys[randIndex]]);
+				if (rand <= probabilities[keys[randIndex]]/4 || probabilities[keys[randIndex]] == 4){
+					found = true;
+					text = keys[randIndex];
 				}
 				rand = Math.random();
 			}
-			console.log("probabilities");
 			var seed = new Seed(0, 0);
 			seed.genotype = text;
 			inventory_arr.push(seed);
 			paintInventory();
+			stage.removeChild(crossButton[0]);
+			stage.removeChild(crossButton[1]);
 		});
-		stage.addChild(shape);
-		crossButton.push(shape);
-		stage.addChild(text);
-
 	}
 	else {
 		stage.removeChild(punnett);
@@ -518,52 +644,126 @@ function drawPunnett(punnettToggle){
 		for (var i = 0; i < punnetText.length; i++){
 			stage.removeChild(punnetText[i]);
 		}
-		punnetText = [];
-		punnettImages = [];
 		for (var i = 0; i < crossButton.length; i++) {
 			stage.removeChild(crossButton[i]);
 		}
+		//images
+		punnetText = [];
+		punnettImages = [];
 		crossButton = [];
+		//actual objects
 		punnettSeeds = [];
-		for (var i = 0; i < inventorySeeds.length; i++){
-			stage.removeChild(inventorySeeds[i]);
-		}
-		inventorySeeds = [];
 		probabilities = {};
-		paintInventory();
+		leftSide = false;
 	}
 }
 
 function crossTypes(text, locX, locY){
-	console.log("crossType1");
 	var text_type = new createjs.Text(text, "bold 36px Arial", "#000000");
 	text_type.x = locX;
 	text_type.y = locY;
 	stage.addChild(text_type);
 	crossButton.push(text_type);
-	var delete_index = [];
 	for (var i = 0; i < punnettSeeds.length; i++){
 		console.log("looping");
 		for (var j = 0; j < inventory_arr.length; j++){
 			if (punnettSeeds[i] == inventory_arr[j]){
-				stage.removeChild(inventory_arr[j]);
+				stage.removeChild(inventorySeeds[j]);
+				stage.removeChild(messageFields[j]);
 				inventory_arr.splice(j, 1);
-				//delete_index.push(j);
-				//console.log("crossType3");
 			}
 		}
 	}
-	console.log("crossType3");
-	var del_ct = 0;
-	/**for (var i = 0; i <delete_index.length; i++){
-        inventory_arr.splice(i-del_ct, 1);
-    }**/
-	console.log("crossType2");
+	for (var i = 0; i < inventorySeeds.length; i++){
+		stage.removeChild(inventorySeeds[i]);
+	}
+	for (var i = 0; i < messageFields.length; i++){
+		stage.removeChild(messageFields[i]);
+	}
+	paintInventory();
 	if (probabilities[text] == undefined){
 		probabilities[text] = 1;
 	}
 	else {
 		probabilities[text]++;
 	}
-	console.log("crossType4");
+}
+
+function giveSeed(){
+	for (var i = 0; i < npcs.length; i++){
+		if (Math.abs((npcs[i].x - player.x)) <= 50 && Math.abs((npcs[i].y - player.y)) <= 50){
+			console.log("ON TOP ( ͡° ͜ʖ ͡°)");
+			for (var j = 0; j < inventory_arr.length; j++){
+				console.log("inventory prints" + speechTexts[i].text + " " + inventory_arr[j].text);
+				if (speechTexts[i].text === inventory_arr[j].genotype){
+					for (var k = 0; k < inventorySeeds.length; k++){
+						stage.removeChild(inventorySeeds[k]);
+					}
+					for (var k = 0; k < messageFields.length; k++){
+						stage.removeChild(messageFields[k]);
+					}
+					inventory_arr.splice(j, 1);
+					paintInventory();
+				}
+			}
+			stage.removeChild(npcImages[i]);
+			stage.removeChild(speechBubbles[i]);
+			stage.removeChild(speechTexts[i]);
+			npcs.splice(i, 1);
+			npcImages.splice(i, 1);
+			speechBubbles.splice(i, 1);
+			speechTexts.splice(i, 1);
+			numNpcs--;
+			score += 10;
+			updateScore();
+		}
+	}
+}
+
+function deleteSeed(keycode){
+	var idx = keycode-49;
+	if(idx < inventory_arr.length) {
+		console.log('idx ' + idx);
+		inventory_arr.splice(idx, 1);
+		console.log(inventorySeeds.length);
+		stage.removeChild(inventorySeeds[idx]);
+		stage.removeChild(messageFields[idx]);
+		inventorySeeds.splice(idx, 1);
+		messageFields.splice(idx, 1);
+		console.log(inventorySeeds.length);
+		paintInventory();
+	}
+}
+
+function endGame() {
+	createjs.Ticker.paused = true;
+	stage.removeAllChildren();
+	stage.update();
+	var wonGame = new createjs.Text("u w0n gr8 j0b u r D b3st",
+		"40px Arial", "#FFFFFF");
+	wonGame.x = canvas.width/2;
+	wonGame.y = canvas.height/2;
+	stage.addChild(wonGame);
+}
+
+function updateScore(){
+	stage.removeChild(score_text);
+	score_text = new createjs.Text("Score: \n" + "    " + score,
+		"24px Arial", "#FFFFFF");
+	score_text.x = 969;
+	score_text.y = 60;
+	stage.addChild(score_text);
+}
+
+function updateStamina(){
+	if(stamina > 0){
+		noRun = false;
+	}
+	stage.removeChild(staminaShape);
+	staminaShape = new createjs.Shape();
+	staminaShape.graphics.beginStroke("#000");
+	staminaShape.graphics.setStrokeStyle(1);
+	staminaShape.snapToPixel = true;
+	staminaShape.graphics.beginFill("#FFA500").drawRect(977, 150, 50, stamina);
+	stage.addChild(staminaShape);
 }
