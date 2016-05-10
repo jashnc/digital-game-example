@@ -80,7 +80,7 @@ function loadAssets() {
 		{src: "sprites/set3_background.png", id:"help_bg"},
 		{src: "sprites/Yjrtrainerf.png", id:"npc"},
 		{src: "sprites/inventory.png", id:"inventory"},
-		{src: "sprites/g3443.png", id: "speechbubble"}
+		{src: "sprites/speech_bubble.png", id: "speechbubble"}
 	];
 
 	loader = new createjs.LoadQueue();
