@@ -1,3 +1,4 @@
+
 var canvas, stage, player, map, loader, help, helpToggle, help_bg, help_display, inventory;
 
 //set up keyboard events
