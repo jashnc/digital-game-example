@@ -153,14 +153,16 @@ function handleFileComplete(event) {
 	help1.textAlign = "center";
 	help1.x = canvas.width / 2;
 	help1.y = (canvas.width/4) - 90;
-	help2 = new createjs.Text("-Pick up seeds by running over them\n"+
+	help2 = new createjs.Text("-Punnett Squares are diagrams that help determine an outcome of crossing two different traits\n"+
+		"-In this game, we use different seeds with traits to cross them into a new seed with mixed traits\n"+
+		"-Pick up seeds by running over them\n"+
 		"-Hold 'R' to run at cost of your stamina bar\n"+
 		"-Press 'P' to open your Punnett Square to cross seeds\n"+
 		"-Click on seeds in your inventory with the Punnett Square open to cross them\n"+
 		"  (you need at least 2 seeds to cross, and you're not always guaranteed to\n   get an exact type you want!)\n"+
 		"-Press 1-8 keys to drop a seed in the corresponding inventory slot\n"+
 		"-Press 'H' to open/close this menu\n",
-		"20px Arial", "#1b1e1e");
+		"16px Arial", "#1b1e1e");
 	help2.x = (canvas.width / 2) - 340;
 	help2.y = (canvas.width/4) + 55;
 	helpToggle = true;
