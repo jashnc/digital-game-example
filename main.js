@@ -22,6 +22,7 @@ var seeds = [];
 var npcs = [];
 var inventory_arr = [];
 var seedImages = [];
+var speechBubbles = [];
 var running = false;
 
 //this is the initialization method that is called when the web page is first opened.
@@ -79,7 +80,8 @@ function loadAssets() {
 		{src: "sprites/seed.png", id:"seed"},
         {src: "sprites/set3_background.png", id:"help_bg"},
         {src: "sprites/Yjrtrainerf.png", id:"npc"},
-        {src: "sprites/inventory.png", id:"inventory"}
+        {src: "sprites/inventory.png", id:"inventory"},
+		{src: "sprites/g3443.png", id: "speechbubble"}
 	];
 
 	loader = new createjs.LoadQueue();
@@ -127,6 +129,7 @@ function tick(event) {
 		if (numNpcs < 5){
 			numNpcs++;
 			randomNpcPlacer();
+
 		}
 	}
 	counter++;
@@ -263,13 +266,13 @@ function checkSameLoc(obj, otherObj) {
     var dup = true;
     while (dup) {
         for (var i = 0; i < obj.length; i++) {
-            if (obj[i].x == rand[0] && obj[i].y == rand[1]) {
+            if ((rand[0] - obj[i].x) <= 50 && (rand[1] - obj[i].y) <= 50) {
                 dup = false;
                 rand = genRandXY();
             }
         }
         for (var i = 0; i < otherObj.length; i++) {
-            if (otherObj[i].x == rand[0] && otherObj[i].y == rand[1]) {
+            if ((rand[0] - otherObj[i].x) <= 50 && (rand[1] - otherObj[i].y) <= 50) {
                 dup = false;
                 rand = genRandXY();
             }
@@ -306,7 +309,15 @@ function randomNpcPlacer(){
     npcImage.y = rand[1];
     stage.addChild(npcImage);
     npcs.push(npc);
-
+	var speechbubble = new createjs.Bitmap(loader.getResult("speechbubble"));
+	speechbubble.x = npcImage.x;
+	speechbubble.y = npcImage.y - 20;
+	speechText = new createjs.Text(genotypeCrosses[Math.floor(Math.random()*genotypeCrosses.length)], "bold 24px Arial", "#000000");
+	speechText.x = speechbubble.x + 5;
+	speechText.y = speechbubble.y;
+	stage.addChild(speechbubble);
+	speechBubbles.push(speechbubble);
+	stage.addChild(speechText);
 }
 
 
@@ -322,7 +333,8 @@ function handleKeyUp(e) {
 	}
 }
 
-var genotypes = ["Aa", "AA", "aa", "Bb", "BB", "bb", "Cc", "CC", "cc"];
+var genotypes = ["Aa", "AA", "aa", "Bb", "bb", "Cc", "CC"];
+var genotypeCrosses = ["BB", "cc", "Ab", "Ba", "Ac"];
 
 function Npc(x, y, png){
     this.x = x;

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   id="svg3406"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   width="125"
+   height="100"
+   viewBox="0 0 125 100"
+   sodipodi:docname="speechbubble.svg">
+  <metadata
+     id="metadata3412">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs3410" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1290"
+     inkscape:window-height="805"
+     id="namedview3408"
+     showgrid="false"
+     inkscape:zoom="3.88"
+     inkscape:cx="164.11557"
+     inkscape:cy="50"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg3406" />
+  <g
+     id="g3443"
+     transform="translate(36.340207,4.1237113)"
+     inkscape:export-xdpi="179.5"
+     inkscape:export-ydpi="179.5">
+    <image
+       y="2.0618553"
+       x="96.134026"
+       id="image3414"
+       xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABQCAYAAADvCdDvAAAABHNCSVQICAgIfAhkiAAAAAlwSFlz
+AAALEgAACxIB0t1+/AAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNui8sowAAAHB
+SURBVHic7dzRjoMgEEbhuun7v7J71caasAwCw3F7vrutRkx/BxS6Ph6SyrbAPvv0s/g+xe/9J/Ms
+VGcgMKXSeXdT+26PNdq2fXztH39YITAGAnMsF7upBc7dlxUCYyAwBgJjIDAGAmMgMAYCYyAwBgJj
+IDDPzMZO0wRvr6ma2vbZxyltj34+ghUCk1IhrVdU9IqsHa+0fcWVH2WFwKRUSKlvr13BvftFj9Pa
+zkxWCEzqXdaosSG6X+tYED2fmRVjhcCk3mWd9d7NXB1DWse0TFYIjD9yWMwfOcAZCIyBwBgIjIHA
+TH0OaV2XqH0+ar2k1m70ODNmh60QmNTZ3pfeK+vqnNjVdjOfy6wQmCVzWbPnsEa3mznnZYXAOIZc
+aK/2eQ8rBAYxhqxac4/uV9ruc8gXcD1kMddD4AwExkBgDATGQGAMBMZAYAwExkBgDATGV/wt4Cv+
+bsRAYPAvUo50mZn/AziIL1K+CwOBiSzhrugPerrJ2/VfR1YIjIHAGAiMgcAYCAzpjqRp/uyv+aA7
+s0JgDAQm9W1Avf5rN3VkhcAYCAyp7CPzV6TzncIKgTEQmNVdwLGbWn0uCFYIjIHA/ALHg+l3y0nT
+VQAAAABJRU5ErkJggg==
+"
+       preserveAspectRatio="none"
+       height="100"
+       width="125" />
+    <rect
+       y="20.876289"
+       x="114.69073"
+       height="45.876289"
+       width="87.886597"
+       id="rect3416"
+       style="fill:#ffffff" />
+  </g>
+</svg>
