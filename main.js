@@ -567,7 +567,7 @@ function pickUpSeeds(x, y){
 
 			var seedCenterY = seeds[i].y + 10;
 
-			if (Math.abs(x - seedCenterX) < 20 && Math.abs(y - seedCenterY) < 20) {
+			if (Math.abs((x+10) - seedCenterX) < 20 && Math.abs((y+20)  - seedCenterY) < 20) {
 				stage.removeChild(seedImages[i]);
 				seedImages.splice(i, 1);
 				return seeds[i];
