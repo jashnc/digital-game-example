@@ -1,4 +1,3 @@
-
 var canvas, stage, player, map, loader, help, helpToggle, help_bg, help_display, inventory;
 
 //set up keyboard events
@@ -247,8 +246,8 @@ function handleKeyDown(e) {
  */
 function genRandXY(){
 	do {
-		var randomX = Math.random()*canvas.width;
-		var randomY = Math.random()*canvas.height;
+		var randomX = Math.floor(Math.random()*canvas.width);
+		var randomY = Math.floor(Math.random()*canvas.height);
 	}
 	while(!inBounds(randomX, randomY));
 	return [randomX, randomY];
@@ -263,21 +262,15 @@ function genRandXY(){
  */
 function checkSameLoc(obj, otherObj) {
 	var rand = genRandXY();
-	var dup = true;
-	while (dup) {
-		for (var i = 0; i < obj.length; i++) {
-			if ((rand[0] - obj[i].x) <= 50 && (rand[1] - obj[i].y) <= 50) {
-				dup = false;
-				rand = genRandXY();
-			}
+	for (var i = 0; i < obj.length; i++) {
+		if (Math.abs((rand[0] - obj[i].x)) <= 50 && Math.abs((rand[1] - obj[i].y)) <= 50) {
+			rand = genRandXY();
 		}
-		for (var i = 0; i < otherObj.length; i++) {
-			if ((rand[0] - otherObj[i].x) <= 50 && (rand[1] - otherObj[i].y) <= 50) {
-				dup = false;
-				rand = genRandXY();
-			}
+	}
+	for (var i = 0; i < otherObj.length; i++) {
+		if (Math.abs((rand[0] - otherObj[i].x)) <= 50 && Math.abs((rand[1] - otherObj[i].y)) <= 50) {
+			rand = genRandXY();
 		}
-		dup = !dup;
 	}
 	return rand;
 }
@@ -289,9 +282,9 @@ function randomSeedPlacer(){
 	var rand = checkSameLoc(obj, otherObj);
 	var seed = new Seed(rand[0], rand[1]);
 	var seedImage = new createjs.Bitmap(loader.getResult("seed"));
-	seedImage.addEventListener("mouseover", function(){
+	/*seedImage.addEventListener("mouseover", function(){
 		console.log("mouseover");
-	});
+	});*/
 	seedImage.x = rand[0];
 	seedImage.y = rand[1];
 	stage.addChild(seedImage);
