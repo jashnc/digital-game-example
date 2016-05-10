@@ -146,8 +146,8 @@ function handleFileComplete(event) {
 		"Move Xerxes around using the arrow keys.  " +
 		"Collect seeds for 1 point, \n cross them " +
 		"using the Punnett Square to get new seeds, " +
-		"and turn the \n right seed in to a person by pressing 'T' when near them for 10 points!\n  Your score is always decreasing slowly," +
-		"so get started quick!\n"+
+		"and turn the \n right seed in to a person by pressing 'T' when near them for 10 points!\n  Don't let your score fall to 0, " +
+		"get started quick!\n"+
 		"---------------------------------------------------------------------------------------------",
 		"20px Arial", "#1b1e1e");
 	help1.textAlign = "center";
@@ -472,7 +472,7 @@ function handleKeyUp(e) {
 
 var rareGenotypes = ["AA", "aa", "BB", "bb", "CC", "cc"];
 var genotypes = ["Aa", "Bb", "Cc"];
-var genotypeCrosses = ["Ab", "Ac", "Bc", "ab", "ac", "bc"];
+var genotypeCrosses = ["Ab", "Ac", "Ba", "Bc", "Ca", "Cb", "ab", "ac", "bc", "AB", "AC", "BC"];
 
 function Npc(x, y, png){
 	this.x = x;
@@ -779,7 +779,7 @@ function endGame() {
 		var result = new createjs.Text("Game Over (Your score reached 0!)",
 			"40px Arial", "#FFFFFF");
 	}
-	result.x = canvas.width/2 - 400;
+	result.x = canvas.width/2 - 200;
 	result.y = canvas.height/2;
 	stage.addChild(result);
 }
