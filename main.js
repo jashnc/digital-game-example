@@ -470,8 +470,9 @@ function handleKeyUp(e) {
 	}
 }
 
-var genotypes = ["AA", "aa", "BB", "bb", "CC", "cc"];
-var genotypeCrosses = ["Aa", "Bb", "Cc", "Ab", "Ac", "Bc", "ab", "ac", "bc"];
+var rareGenotypes = ["AA", "aa", "BB", "bb", "CC", "cc"];
+var genotypes = ["Aa", "Bb", "Cc"];
+var genotypeCrosses = ["Ab", "Ac", "Bc", "ab", "ac", "bc"];
 
 function Npc(x, y, png){
 	this.x = x;
@@ -482,8 +483,15 @@ function Npc(x, y, png){
 function Seed(x, y){
 	this.x = x;
 	this.y = y;
-	var index = Math.floor(Math.random()*genotypes.length);
-	this.genotype = genotypes[index];
+	var rand = Math.random();
+	if (rand <= 1/5){
+		var index = Math.floor(Math.random()*rareGenotypes.length);
+		this.genotype = rareGenotypes[index];
+	}
+	else{
+		var index = Math.floor(Math.random()*genotypes.length);
+		this.genotype = genotypes[index];
+	}
 	this.clicked = false;
 }
 
