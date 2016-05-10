@@ -1,5 +1,5 @@
 
-var canvas, stage, player, map, loader, help, helpToggle, help_bg, help_display, inventory;
+var canvas, stage, player, map, loader, help, helpToggle, help_bg, help_display, inventory, punnett;
 
 //set up keyboard events
 document.onkeydown = handleKeyDown;
@@ -14,6 +14,7 @@ var KEYCODE_DOWN = 40;
 var KEYCODE_A = 65;			//key A, any other key would be 65 + the offset (i.e. B is 65+1)
 var KEYCODE_H = 72;
 var KEYCODE_R = 82;
+var KEYCODE_P = 80;
 
 var counter = 0;
 var numSeeds = 0;
@@ -23,7 +24,14 @@ var npcs = [];
 var inventory_arr = [];
 var seedImages = [];
 var running = false;
-
+var punnettToggle = false;
+var leftSide = null;
+var punnettImages = [];
+var punnetText = [];
+var crossButton = [];
+var punnettSeeds = [];
+var inventorySeeds = [];
+var probabilities = {};
 //this is the initialization method that is called when the web page is first opened.
 function init() {
 
@@ -79,7 +87,8 @@ function loadAssets() {
 		{src: "sprites/seed.png", id:"seed"},
         {src: "sprites/set3_background.png", id:"help_bg"},
         {src: "sprites/Yjrtrainerf.png", id:"npc"},
-        {src: "sprites/inventory.png", id:"inventory"}
+        {src: "sprites/inventory.png", id:"inventory"},
+		{src: "sprites/punnet.png", id:"punnett"}
 	];
 
 	loader = new createjs.LoadQueue();
@@ -100,6 +109,10 @@ function handleFileComplete(event) {
 	map = new createjs.Bitmap(loader.getResult("map"));
     help_bg = new createjs.Bitmap(loader.getResult("help_bg"));
     inventory = new createjs.Bitmap(loader.getResult("inventory"));
+	punnett = new createjs.Bitmap(loader.getResult("punnett"));
+
+	punnett.x = 300;
+	punnett.y = 150;
 
     inventory.x = 12;
     inventory.y = 600;
@@ -123,11 +136,14 @@ function tick(event) {
             randomSeedPlacer();
         }
     }
-	if(counter % 750 == 0 && counter != 0){
+	/**if(counter % 750 == 0 && counter != 0){
 		if (numNpcs < 5){
 			numNpcs++;
 			randomNpcPlacer();
 		}
+	}**/
+	if (counter == 100000){
+		counter = 0;
 	}
 	counter++;
 	var x = player.x;
@@ -233,6 +249,11 @@ function handleKeyDown(e) {
             return false;
 		case KEYCODE_R:
 			running = true;
+			return false;
+		case KEYCODE_P:
+			punnettToggle = !punnettToggle;
+			drawPunnett(punnettToggle);
+			return false;
 		default:
 			console.log(e.keyCode);
 	}
@@ -244,8 +265,8 @@ function handleKeyDown(e) {
  */
 function genRandXY(){
     do {
-        var randomX = Math.random()*canvas.width;
-        var randomY = Math.random()*canvas.height;
+        var randomX = Math.floor(Math.random()*canvas.width);
+        var randomY = Math.floor(Math.random()*canvas.height);
     }
     while(!inBounds(randomX, randomY));
     return [randomX, randomY];
@@ -259,24 +280,18 @@ function genRandXY(){
  * @returns the array of random locations from genRandXY
  */
 function checkSameLoc(obj, otherObj) {
-    var rand = genRandXY();
-    var dup = true;
-    while (dup) {
-        for (var i = 0; i < obj.length; i++) {
-            if (obj[i].x == rand[0] && obj[i].y == rand[1]) {
-                dup = false;
-                rand = genRandXY();
-            }
-        }
-        for (var i = 0; i < otherObj.length; i++) {
-            if (otherObj[i].x == rand[0] && otherObj[i].y == rand[1]) {
-                dup = false;
-                rand = genRandXY();
-            }
-        }
-        dup = !dup;
-    }
-    return rand;
+	var rand = genRandXY();
+	for (var i = 0; i < obj.length; i++) {
+		if (Math.abs((rand[0] - obj[i].x)) <= 50 && Math.abs((rand[1] - obj[i].y)) <= 50) {
+			rand = genRandXY();
+		}
+	}
+	for (var i = 0; i < otherObj.length; i++) {
+		if (Math.abs((rand[0] - otherObj[i].x)) <= 50 && Math.abs((rand[1] - otherObj[i].y)) <= 50) {
+			rand = genRandXY();
+		}
+	}
+	return rand;
 }
 
 
@@ -346,8 +361,46 @@ function paintInventory() {
     for(var i = 0; i < inventory_arr.length; i++) {
         var seed = new createjs.Bitmap(loader.getResult("seed"));
 		(function(index) {
-			seed.addEventListener("mouseover", function () {
-				console.log(inventory_arr[index].genotype)
+			seed.addEventListener("click", function () {
+				console.log(inventory_arr[index].genotype);
+				if (!leftSide){
+					var otherSeed = new createjs.Bitmap(loader.getResult("seed"));
+					otherSeed.setTransform(230, 320, 2, 2);
+
+					stage.addChild(otherSeed);
+					punnettImages.push(otherSeed);
+					var firstG = new createjs.Text(inventory_arr[index].genotype.substring(0, 1), "bold 36px Arial", "#FFFFFF");
+					var secondG = new createjs.Text(inventory_arr[index].genotype.substring(1, 2), "bold 36px Arial", "#FFFFFF");
+					firstG.x = 270;
+					firstG.y = 220;
+					secondG.x = 270;
+					secondG.y = 420;
+					stage.addChild(firstG);
+					stage.addChild(secondG);
+					punnetText.push(firstG);
+					punnetText.push(secondG);
+					leftSide = !leftSide;
+					punnettSeeds.push(inventory_arr[index]);
+				}
+				else {
+					var otherSeed = new createjs.Bitmap(loader.getResult("seed"));
+					otherSeed.setTransform(480, 80, 2, 2);
+
+					stage.addChild(otherSeed);
+					punnettImages.push(otherSeed);
+					var firstG = new createjs.Text(inventory_arr[index].genotype.substring(0, 1), "bold 36px Arial", "#FFFFFF");
+					var secondG = new createjs.Text(inventory_arr[index].genotype.substring(1, 2), "bold 36px Arial", "#FFFFFF");
+					firstG.x = 400;
+					firstG.y = 100;
+					secondG.x = 600;
+					secondG.y = 100;
+					stage.addChild(firstG);
+					stage.addChild(secondG);
+					punnetText.push(firstG);
+					punnetText.push(secondG);
+					leftSide = !leftSide;
+					punnettSeeds.push(inventory_arr[index]);
+				}
 			});
 		})(i);
         seed.setTransform((i*132)+53, 630, 2, 2);
@@ -356,6 +409,8 @@ function paintInventory() {
 		messageField.x = ((i*132)+53);
 		messageField.y = 674;
 		stage.addChild(messageField);
+		inventorySeeds.push(seed);
+		inventorySeeds.push(messageField);
 
     }
 }
@@ -406,4 +461,107 @@ function helpText(){
         stage.removeChild(help);
         helpToggle = !helpToggle;
     }
+}
+
+function drawPunnett(punnettToggle){
+	if (punnettToggle) {
+		stage.addChild(punnett);
+		var text = new createjs.Text("CROSS!", "bold 24px Arial", "#FFFFFF");
+		text.x = 460;
+		text.y = 325;
+		crossButton.push(text);
+		var shape = new createjs.Shape();
+		shape.graphics.beginFill("#5ab738").drawRect(0, 0, 100, 50);
+		shape.x = 455;
+		shape.y = 320;
+		shape.addEventListener("click", function(){
+			var topLeft = punnetText[0].text + punnetText[2].text;
+			var topRight = punnetText[0].text + punnetText[3].text;
+			var bottomLeft = punnetText[1].text + punnetText[2].text;
+			var bottomRight = punnetText[1].text + punnetText[3].text;
+			crossTypes(topLeft, 380, 220);
+			crossTypes(topRight, 580, 220);
+			crossTypes(bottomLeft, 380, 420);
+			crossTypes(bottomRight, 580, 420);
+			var rand = Math.random();
+			var found = false;
+			var text = "";
+			console.log("crossing");
+			while (!found){
+				for (var key in probabilities){
+					console.log(probabilities[key]/4 + " is prob and rand is" + rand);
+					if (probabilities[key]/4 <= rand){
+						found = true;
+						text = key;
+					}
+				}
+				rand = Math.random();
+			}
+			console.log("probabilities");
+			var seed = new Seed(0, 0);
+			seed.genotype = text;
+			inventory_arr.push(seed);
+			paintInventory();
+		});
+		stage.addChild(shape);
+		crossButton.push(shape);
+		stage.addChild(text);
+
+	}
+	else {
+		stage.removeChild(punnett);
+		for (var i = 0; i < punnettImages.length; i++){
+			stage.removeChild(punnettImages[i]);
+		}
+		for (var i = 0; i < punnetText.length; i++){
+			stage.removeChild(punnetText[i]);
+		}
+		punnetText = [];
+		punnettImages = [];
+		for (var i = 0; i < crossButton.length; i++) {
+			stage.removeChild(crossButton[i]);
+		}
+		crossButton = [];
+		punnettSeeds = [];
+		for (var i = 0; i < inventorySeeds.length; i++){
+			stage.removeChild(inventorySeeds[i]);
+		}
+		inventorySeeds = [];
+		probabilities = {};
+		paintInventory();
+	}
+}
+
+function crossTypes(text, locX, locY){
+	console.log("crossType1");
+	var text_type = new createjs.Text(text, "bold 36px Arial", "#000000");
+	text_type.x = locX;
+	text_type.y = locY;
+	stage.addChild(text_type);
+	crossButton.push(text_type);
+	var delete_index = [];
+	for (var i = 0; i < punnettSeeds.length; i++){
+		console.log("looping");
+		for (var j = 0; j < inventory_arr.length; j++){
+			if (punnettSeeds[i] == inventory_arr[j]){
+				stage.removeChild(inventory_arr[j]);
+				inventory_arr.splice(j, 1);
+				//delete_index.push(j);
+				//console.log("crossType3");
+			}
+		}
+	}
+	console.log("crossType3");
+	var del_ct = 0;
+	/**for (var i = 0; i <delete_index.length; i++){
+		inventory_arr.splice(i-del_ct, 1);
+	}**/
+	console.log("crossType2");
+	if (probabilities[text] == undefined){
+		probabilities[text] = 1;
+	}
+	else {
+		probabilities[text]++;
+	}
+	console.log("crossType4");
 }
