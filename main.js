@@ -1,4 +1,4 @@
-var canvas, stage, player, map, loader, help, helpToggle, help_bg, help_display, inventory, punnett, staminaShape;
+var canvas, stage, player, map, loader, help1, help2, help3, helpToggle, help_bg, help_display, inventory, punnett, staminaShape, crossClicked;
 
 //set up keyboard events
 document.onkeydown = handleKeyDown;
@@ -44,10 +44,11 @@ var inventorySeeds = [];
 var messageFields = [];
 var probabilities = {};
 var npcImages = [];
-var score = 49;
+var score = 10;
 var score_text = " ";
 var stamina = 400;
 var noRun = false;
+var gameLost = false;
 
 //this is the initialization method that is called when the web page is first opened.
 function init() {
@@ -66,23 +67,9 @@ function init() {
 	//add text
 	messageField = new createjs.Text("Loading", "bold 24px Arial", "#FFFFFF");
 	messageField.textAlign = "center";
-	messageField.textBaseline = "middle";
 	messageField.x = canvas.width / 2;
 	messageField.y = canvas.width / 2;
 
-	help = new createjs.Text("Move around using the arrow keys.\n " +
-		"Collect seeds and cross them \n" +
-		"using the Punnett Squares to get points!",
-		"30px Arial", "#000000");
-	help.textAlign = "center";
-	help.textBaseline = "middle";
-	help.x = canvas.width / 2;
-	help.y = canvas.width / 4;
-	helpToggle = true;
-
-	help_display = new createjs.Text("HELP", "bold 36px Arial", "#000000");
-	help_display.x = 185;
-	help_display.y = 155;
 	//add the message object to the stage
 	stage.addChild(messageField);
 
@@ -154,6 +141,37 @@ function handleFileComplete(event) {
 	staminaShape.snapToPixel = true;
 	staminaShape.graphics.beginFill("#FFA500").drawRect(977, 150, 50, 400);
 	stage.addChild(staminaShape);
+
+	help1 = new createjs.Text("Reach a score of 50 to beat this tutorial! \n\n" +
+		"Move Xerxes around using the arrow keys.  " +
+		"Collect seeds for 1 point, \n cross them " +
+		"using the Punnett Square to get new seeds, " +
+		"and turn the \n right seed in to a person by pressing 'T' when near them for 10 points!\n  Your score is always decreasing slowly," +
+		"so get started quick!\n"+
+		"---------------------------------------------------------------------------------------------",
+		"20px Arial", "#1b1e1e");
+	help1.textAlign = "center";
+	help1.x = canvas.width / 2;
+	help1.y = (canvas.width/4) - 90;
+	help2 = new createjs.Text("-Pick up seeds by running over them\n"+
+		"-Hold 'R' to run at cost of your stamina bar\n"+
+		"-Press 'P' to open your Punnett Square to cross seeds\n"+
+		"-Click on seeds in your inventory with the Punnett Square open to cross them\n"+
+		"  (you need at least 2 seeds to cross, and you're not always guaranteed to\n   get an exact type you want!)\n"+
+		"-Press 1-8 keys to drop a seed in the corresponding inventory slot\n"+
+		"-Press 'H' to open/close this menu\n",
+		"20px Arial", "#1b1e1e");
+	help2.x = (canvas.width / 2) - 340;
+	help2.y = (canvas.width/4) + 55;
+	helpToggle = true;
+
+	help_display = new createjs.Text("HELP", "bold 36px Arial", "#1b1e1e");
+	help_display.x = 185;
+	help_display.y = 155;
+	stage.addChild(help_bg);
+	stage.addChild(help_display);
+	stage.addChild(help1);
+	stage.addChild(help2);
 }
 
 //this function is the 'animation loop'; it is called every x ms where x is Ticker.framerate
@@ -178,8 +196,6 @@ function tick(event) {
 		score--;
 		updateScore();
 	}
-	if(score >= 50)
-		endGame();
 	if(stamina == 0){
 		noRun = true;
 	}
@@ -200,6 +216,14 @@ function tick(event) {
 		}
 	}
 	updateStamina();
+	punnettOnTop();
+	helpOnTop();
+	if(score >= 50 || score <= 0) {
+		if (score <= 0){
+			gameLost = true;
+		}
+		endGame();
+	}
 	counter++;
 	var x = player.x;
 	var y = player.y;
@@ -321,9 +345,11 @@ function handleKeyDown(e) {
 				console.log("seed (" + seeds[i].x + ", " + seeds[i].y + ")");
 			}
 			console.log(numSeeds);
-			console.log(inventory_arr);*/
+			console.log(inventory_arr);
+			console.log(crossButton);*/
 			return false;
 		case KEYCODE_H:
+			helpToggle = !helpToggle;
 			helpText();
 			return false;
 		case KEYCODE_R:
@@ -444,8 +470,8 @@ function handleKeyUp(e) {
 	}
 }
 
-var genotypes = ["Aa", "AA", "aa", "BB", "Bb", "bb", "Cc", "CC", "cc"];
-var genotypeCrosses = ["Ab", "Ac", "Ba", "Bc", "Ca", "Cb", "ab", "ac", "ba", "bc", "ca", "cb"];
+var genotypes = ["AA", "aa", "BB", "bb", "CC", "cc"];
+var genotypeCrosses = ["Aa", "Bb", "Cc", "Ab", "Ac", "Bc", "ab", "ac", "bc"];
 
 function Npc(x, y, png){
 	this.x = x;
@@ -568,14 +594,14 @@ function helpText(){
 	if (helpToggle){
 		stage.addChild(help_bg);
 		stage.addChild(help_display);
-		stage.addChild(help);
-		helpToggle = !helpToggle;
+		stage.addChild(help1);
+		stage.addChild(help2);
 	}
 	else{
 		stage.removeChild(help_bg);
 		stage.removeChild(help_display);
-		stage.removeChild(help);
-		helpToggle = !helpToggle;
+		stage.removeChild(help1);
+		stage.removeChild(help2);
 	}
 }
 
@@ -585,11 +611,11 @@ function drawPunnett(punnettToggle){
 		var text = new createjs.Text("CROSS!", "bold 24px Arial", "#FFFFFF");
 		text.x = 460;
 		text.y = 325;
-		crossButton.push(text);
 		var shape = new createjs.Shape();
 		shape.graphics.beginFill("#5ab738").drawRect(455, 320, 100, 50);
-		stage.addChild(shape);
 		crossButton.push(shape);
+		crossButton.push(text);
+		stage.addChild(shape);
 		stage.addChild(text);
 		shape.addEventListener("click", function(){
 			var topLeft = punnetText[0].text + punnetText[2].text;
@@ -634,6 +660,7 @@ function drawPunnett(punnettToggle){
 			paintInventory();
 			stage.removeChild(crossButton[0]);
 			stage.removeChild(crossButton[1]);
+			crossClicked = true;
 		});
 	}
 	else {
@@ -655,6 +682,7 @@ function drawPunnett(punnettToggle){
 		punnettSeeds = [];
 		probabilities = {};
 		leftSide = false;
+		crossClicked = false;
 	}
 }
 
@@ -692,7 +720,6 @@ function crossTypes(text, locX, locY){
 function giveSeed(){
 	for (var i = 0; i < npcs.length; i++){
 		if (Math.abs((npcs[i].x - player.x)) <= 50 && Math.abs((npcs[i].y - player.y)) <= 50){
-			console.log("ON TOP ( ͡° ͜ʖ ͡°)");
 			for (var j = 0; j < inventory_arr.length; j++){
 				console.log("inventory prints" + speechTexts[i].text + " " + inventory_arr[j].text);
 				if (speechTexts[i].text === inventory_arr[j].genotype){
@@ -704,18 +731,18 @@ function giveSeed(){
 					}
 					inventory_arr.splice(j, 1);
 					paintInventory();
+					stage.removeChild(npcImages[i]);
+					stage.removeChild(speechBubbles[i]);
+					stage.removeChild(speechTexts[i]);
+					npcs.splice(i, 1);
+					npcImages.splice(i, 1);
+					speechBubbles.splice(i, 1);
+					speechTexts.splice(i, 1);
+					numNpcs--;
+					score += 10;
+					updateScore();
 				}
 			}
-			stage.removeChild(npcImages[i]);
-			stage.removeChild(speechBubbles[i]);
-			stage.removeChild(speechTexts[i]);
-			npcs.splice(i, 1);
-			npcImages.splice(i, 1);
-			speechBubbles.splice(i, 1);
-			speechTexts.splice(i, 1);
-			numNpcs--;
-			score += 10;
-			updateScore();
 		}
 	}
 }
@@ -723,27 +750,30 @@ function giveSeed(){
 function deleteSeed(keycode){
 	var idx = keycode-49;
 	if(idx < inventory_arr.length) {
-		console.log('idx ' + idx);
 		inventory_arr.splice(idx, 1);
-		console.log(inventorySeeds.length);
 		stage.removeChild(inventorySeeds[idx]);
 		stage.removeChild(messageFields[idx]);
 		inventorySeeds.splice(idx, 1);
 		messageFields.splice(idx, 1);
-		console.log(inventorySeeds.length);
 		paintInventory();
 	}
 }
 
 function endGame() {
-	createjs.Ticker.paused = true;
+	createjs.Ticker.removeAllEventListeners();
 	stage.removeAllChildren();
 	stage.update();
-	var wonGame = new createjs.Text("u w0n gr8 j0b u r D b3st",
-		"40px Arial", "#FFFFFF");
-	wonGame.x = canvas.width/2;
-	wonGame.y = canvas.height/2;
-	stage.addChild(wonGame);
+	if(!gameLost) {
+		var result = new createjs.Text("You beat the tutorial!",
+			"40px Arial", "#FFFFFF");
+	}
+	else{
+		var result = new createjs.Text("Game Over (Your score reached 0!)",
+			"40px Arial", "#FFFFFF");
+	}
+	result.x = canvas.width/2 - 400;
+	result.y = canvas.height/2;
+	stage.addChild(result);
 }
 
 function updateScore(){
@@ -753,6 +783,51 @@ function updateScore(){
 	score_text.x = 969;
 	score_text.y = 60;
 	stage.addChild(score_text);
+}
+
+function helpOnTop(){
+	if(helpToggle) {
+		stage.removeChild(help_bg);
+		stage.removeChild(help_display);
+		stage.removeChild(help1);
+		stage.removeChild(help2);
+		stage.addChild(help_bg);
+		stage.addChild(help_display);
+		stage.addChild(help1);
+		stage.addChild(help2);
+	}
+}
+
+function punnettOnTop(){
+	if(punnettToggle) {
+		stage.removeChild(punnett);
+		for (var i = 0; i < punnettImages.length; i++) {
+			stage.removeChild(punnettImages[i]);
+		}
+		for (var i = 0; i < punnetText.length; i++) {
+			stage.removeChild(punnetText[i]);
+		}
+		for (var i = 0; i < crossButton.length; i++) {
+			stage.removeChild(crossButton[i]);
+		}
+		stage.addChild(punnett);
+		for (var i = 0; i < punnettImages.length; i++) {
+			stage.addChild(punnettImages[i]);
+		}
+		for (var i = 0; i < punnetText.length; i++) {
+			stage.addChild(punnetText[i]);
+		}
+		if (!crossClicked) {
+			for (var i = 0; i < crossButton.length; i++) {
+				stage.addChild(crossButton[i]);
+			}
+		}
+		else {
+			for (var i = 2; i < crossButton.length; i++) {
+				stage.addChild(crossButton[i]);
+			}
+		}
+	}
 }
 
 function updateStamina(){
