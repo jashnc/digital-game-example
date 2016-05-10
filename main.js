@@ -25,7 +25,7 @@ var seedImages = [];
 var speechBubbles = [];
 var running = false;
 var punnettToggle = false;
-var leftSide = null;
+var leftSide = false;
 var punnettImages = [];
 var punnetText = [];
 var crossButton = [];
@@ -90,16 +90,11 @@ function loadAssets() {
 		{src: "sprites/Yjrtrainerf.png", id:"npc"},
 		{src: "sprites/inventory.png", id:"inventory"},
 		{src: "sprites/speech_bubble.png", id: "speechbubble"},
-		{src: "sprites/punnett.jpg", id:"punnett"}
+		{src: "sprites/punnett.png", id:"punnett"}
 	];
 
 	loader = new createjs.LoadQueue();
 	loader.addEventListener("fileload", handleFileComplete);
-	/**loader.loadFile("sprites/Yyoungster.png");
-	 loader.loadFile("sprites/3848.png");
-	 loader.loadFile("sprites/seed.png");
-	 loader.loadFile("sprites/set3_background.png");
-	 loader.loadFile("sprites/Yjrtrainerf.png");**/
 	loader.loadManifest(manifest);
 }
 
@@ -249,6 +244,7 @@ function handleKeyDown(e) {
 			return false;
 		case KEYCODE_R:
 			running = true;
+			return false;
 		case KEYCODE_P:
 			punnettToggle = !punnettToggle;
 			drawPunnett(punnettToggle);
@@ -369,7 +365,7 @@ function paintInventory() {
 	for(var i = 0; i < inventory_arr.length; i++) {
 		var seed = new createjs.Bitmap(loader.getResult("seed"));
 		(function(index) {
-			seed.addEventListener("mouseover", function () {
+			seed.addEventListener("click", function () {
 				if (!leftSide){
 					var otherSeed = new createjs.Bitmap(loader.getResult("seed"));
 					otherSeed.setTransform(230, 320, 2, 2);
