@@ -515,43 +515,45 @@ function paintInventory() {
 		var seed = new createjs.Bitmap(loader.getResult("seed"));
 		(function(index) {
 			seed.addEventListener("click", function () {
-				if(!inventory_arr[index].clicked) {
-					inventory_arr[index].clicked = true;
-					if (!leftSide) {
-						var otherSeed = new createjs.Bitmap(loader.getResult("seed"));
-						otherSeed.setTransform(230, 320, 2, 2);
-						stage.addChild(otherSeed);
-						punnettImages.push(otherSeed);
-						var firstG = new createjs.Text(inventory_arr[index].genotype.substring(0, 1), "bold 36px Arial", "#FFFFFF");
-						var secondG = new createjs.Text(inventory_arr[index].genotype.substring(1, 2), "bold 36px Arial", "#FFFFFF");
-						firstG.x = 270;
-						firstG.y = 220;
-						secondG.x = 270;
-						secondG.y = 420;
-						stage.addChild(firstG);
-						stage.addChild(secondG);
-						punnetText.push(firstG);
-						punnetText.push(secondG);
-						leftSide = !leftSide;
-						punnettSeeds.push(inventory_arr[index]);
-					}
-					else {
-						var otherSeed = new createjs.Bitmap(loader.getResult("seed"));
-						otherSeed.setTransform(480, 80, 2, 2);
-						stage.addChild(otherSeed);
-						punnettImages.push(otherSeed);
-						var firstG = new createjs.Text(inventory_arr[index].genotype.substring(0, 1), "bold 36px Arial", "#FFFFFF");
-						var secondG = new createjs.Text(inventory_arr[index].genotype.substring(1, 2), "bold 36px Arial", "#FFFFFF");
-						firstG.x = 400;
-						firstG.y = 100;
-						secondG.x = 600;
-						secondG.y = 100;
-						stage.addChild(firstG);
-						stage.addChild(secondG);
-						punnetText.push(firstG);
-						punnetText.push(secondG);
-						leftSide = !leftSide;
-						punnettSeeds.push(inventory_arr[index]);
+				if(punnettToggle) {
+					if (!inventory_arr[index].clicked) {
+						inventory_arr[index].clicked = true;
+						if (!leftSide) {
+							var otherSeed = new createjs.Bitmap(loader.getResult("seed"));
+							otherSeed.setTransform(230, 320, 2, 2);
+							stage.addChild(otherSeed);
+							punnettImages.push(otherSeed);
+							var firstG = new createjs.Text(inventory_arr[index].genotype.substring(0, 1), "bold 36px Arial", "#FFFFFF");
+							var secondG = new createjs.Text(inventory_arr[index].genotype.substring(1, 2), "bold 36px Arial", "#FFFFFF");
+							firstG.x = 270;
+							firstG.y = 220;
+							secondG.x = 270;
+							secondG.y = 420;
+							stage.addChild(firstG);
+							stage.addChild(secondG);
+							punnetText.push(firstG);
+							punnetText.push(secondG);
+							leftSide = !leftSide;
+							punnettSeeds.push(inventory_arr[index]);
+						}
+						else {
+							var otherSeed = new createjs.Bitmap(loader.getResult("seed"));
+							otherSeed.setTransform(480, 80, 2, 2);
+							stage.addChild(otherSeed);
+							punnettImages.push(otherSeed);
+							var firstG = new createjs.Text(inventory_arr[index].genotype.substring(0, 1), "bold 36px Arial", "#FFFFFF");
+							var secondG = new createjs.Text(inventory_arr[index].genotype.substring(1, 2), "bold 36px Arial", "#FFFFFF");
+							firstG.x = 400;
+							firstG.y = 100;
+							secondG.x = 600;
+							secondG.y = 100;
+							stage.addChild(firstG);
+							stage.addChild(secondG);
+							punnetText.push(firstG);
+							punnetText.push(secondG);
+							leftSide = !leftSide;
+							punnettSeeds.push(inventory_arr[index]);
+						}
 					}
 				}
 			});
@@ -774,7 +776,7 @@ function endGame() {
 	stage.removeAllChildren();
 	stage.update();
 	if(!gameLost) {
-		var result = new createjs.Text("You beat the tutorial!",
+		var result = new createjs.Text("gr8 job u R D b35t s33d l33t expert",
 			"40px Arial", "#FFFFFF");
 	}
 	else{
